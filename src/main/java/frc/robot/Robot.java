@@ -4,11 +4,19 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.PWMTalonSRX;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -17,8 +25,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * directory.
  */
 public class Robot extends TimedRobot {
-  private final DifferentialDrive m_robotDrive =
-      new DifferentialDrive(new PWMTalonSRX(0), new PWMTalonSRX(3));
+  // Prepare Controller, Timer, and Drive-Train
+  private DifferentialDrive m_robotDrive;
   private final XboxController m_XboxController = new XboxController(0);
   private final Timer m_timer = new Timer();
 
@@ -27,7 +35,18 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   @Override
-  public void robotInit() {}
+  public void robotInit() {
+    // Define Motors
+    PWMTalonSRX m_leftMotor = new PWMTalonSRX(3);
+    PWMTalonSRX m_rightMotor = new PWMTalonSRX(0);
+
+    // Make Robot Drive Train
+    m_robotDrive = new DifferentialDrive(m_leftMotor, m_rightMotor);
+
+    // Set up the usb camera
+    UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+    camera.setResolution(160, 120);
+  }
 
   /** This function is run once each time the robot enters autonomous mode. */
   @Override
@@ -54,11 +73,26 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic() {
-    double RAxis = m_XboxController.getRawAxis(5);
-    double LAxis = m_XboxController.getRawAxis(1);
-    if (LAxis < 0.008 && LAxis > -0.008) { LAxis = 0; }
-    if (RAxis < 0.008 && RAxis > -0.008) { RAxis = 0; }
-    m_robotDrive.tankDrive(-LAxis, -RAxis/1.05);
+    // Gets the Axis of the right and left sticks
+    int RControllerAxis = 3;
+    double RAxis = m_XboxController.getRawAxis(RControllerAxis);
+    int LControllerAxis = 1;
+    double LAxis = m_XboxController.getRawAxis(LControllerAxis);
+    int TwistAxis = 2;
+    double Twist = m_XboxController.getRawAxis(TwistAxis);
+
+    RAxis /= 1.1;
+    LAxis /= 1;
+    Twist /= 1.5;
+
+    // Custom Input Dead-zones
+    double axisRange = 0.1;
+    if (LAxis < axisRange && LAxis > -axisRange) { LAxis = 0; }
+    if (RAxis < axisRange && RAxis > -axisRange) { RAxis = 0; }
+    if (Twist < axisRange && Twist > -axisRange) { Twist = 0; }
+
+    m_robotDrive.arcadeDrive(LAxis, Twist);
+
   }
 
   /** This function is called once each time the robot enters test mode. */
