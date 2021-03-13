@@ -4,19 +4,12 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.cscore.CvSource;
+import drivetrain.Drivetrain;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.PWMTalonSRX;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -26,9 +19,10 @@ import org.opencv.imgproc.Imgproc;
  */
 public class Robot extends TimedRobot {
   // Prepare Controller, Timer, and Drive-Train
-  private DifferentialDrive m_robotDrive;
   private final XboxController m_XboxController = new XboxController(0);
+  private int pov = 0;
   private final Timer m_timer = new Timer();
+  private Drivetrain drivetrain;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -36,12 +30,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Define Motors
-    PWMTalonSRX m_leftMotor = new PWMTalonSRX(3);
-    PWMTalonSRX m_rightMotor = new PWMTalonSRX(0);
 
-    // Make Robot Drive Train
-    m_robotDrive = new DifferentialDrive(m_leftMotor, m_rightMotor);
+    // Setup Robot
+    drivetrain = new Drivetrain();
 
     // Set up the usb camera
     UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
@@ -58,12 +49,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    // Drive for 2 seconds
-    if (m_timer.get() < 2.0) {
-      m_robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
-    } else {
-      m_robotDrive.stopMotor(); // stop robot
-    }
   }
 
   /** This function is called once each time the robot enters teleoperated mode. */
@@ -73,25 +58,15 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic() {
-    // Gets the Axis of the right and left sticks
-    int RControllerAxis = 3;
-    double RAxis = m_XboxController.getRawAxis(RControllerAxis);
-    int LControllerAxis = 1;
-    double LAxis = m_XboxController.getRawAxis(LControllerAxis);
-    int TwistAxis = 2;
-    double Twist = m_XboxController.getRawAxis(TwistAxis);
 
-    RAxis /= 1.1;
-    LAxis /= 1;
-    Twist /= 1.5;
+    drivetrain.arcadeDrive(m_XboxController.getRawAxis(1),  m_XboxController.getRawAxis(2));
 
-    // Custom Input Dead-zones
-    double axisRange = 0.1;
-    if (LAxis < axisRange && LAxis > -axisRange) { LAxis = 0; }
-    if (RAxis < axisRange && RAxis > -axisRange) { RAxis = 0; }
-    if (Twist < axisRange && Twist > -axisRange) { Twist = 0; }
-
-    m_robotDrive.arcadeDrive(LAxis, Twist);
+    int currentPov = m_XboxController.getPOV();
+    System.out.println(currentPov);
+    if (currentPov != pov) {
+      pov = currentPov;
+      drivetrain.changeSpeed(m_XboxController.getPOV());
+    }
 
   }
 
