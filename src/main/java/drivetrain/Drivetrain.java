@@ -9,8 +9,8 @@ public class Drivetrain {
 
     private final double axisRange = 0.1;
 
-    private double speedFactor = 0.25;
-    private final double minSpeed = 0.25;
+    private double speedFactor = 0.3;
+    private final double minSpeed = 0.3;
     private final double maxSpeed = 1;
 
     public Drivetrain() {
@@ -58,10 +58,12 @@ public class Drivetrain {
 
     public void changeSpeed(int dPad) {
         if (dPad == 0 && speedFactor < maxSpeed) {
-            speedFactor += 0.25;
+            speedFactor = Math.round((speedFactor + 0.1) * 10.0) / 10.0;
+            System.out.println(speedFactor);
         }
         else if (dPad == 180 && speedFactor > minSpeed) {
-            speedFactor -= 0.25;
+            speedFactor = Math.round((speedFactor - 0.1) * 10.0) / 10.0;
+            System.out.println(speedFactor);
         }
     }
 }

@@ -62,7 +62,6 @@ public class Robot extends TimedRobot {
     drivetrain.arcadeDrive(m_XboxController.getRawAxis(1),  m_XboxController.getRawAxis(2));
 
     int currentPov = m_XboxController.getPOV();
-    System.out.println(currentPov);
     if (currentPov != pov) {
       pov = currentPov;
       drivetrain.changeSpeed(m_XboxController.getPOV());
