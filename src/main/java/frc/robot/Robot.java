@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
 
     // Setup Robot
     drivetrain = new Drivetrain();
-    limelightTargeting = new Target();
+//    limelightTargeting = new Target();
 
     // Set up the usb camera
     UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
@@ -81,6 +81,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    if (m_XboxController.getBButton()) { limelightTargeting.aim(drivetrain); }
+//    if (m_XboxController.getBButton()) { limelightTargeting.aim(drivetrain); }
   }
 }

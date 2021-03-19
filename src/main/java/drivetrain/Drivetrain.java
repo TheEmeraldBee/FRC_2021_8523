@@ -1,6 +1,7 @@
 package drivetrain;
 
 import edu.wpi.first.wpilibj.PWMTalonSRX;
+import edu.wpi.first.wpiutil.math.MathUtil;
 
 public class Drivetrain {
 
@@ -33,11 +34,11 @@ public class Drivetrain {
         // Turning Left
         else if (twist < 0){
             rMotorSpeed = lAxis;
-            lMotorSpeed = lAxis * (Math.abs(twist) * 0.7);
+            lMotorSpeed = lAxis + (Math.abs(twist) * 0.7);
         }
         // Turning Right
         else if (twist > 0){
-            rMotorSpeed = lAxis * (Math.abs(twist) * 0.7);
+            rMotorSpeed = lAxis + (Math.abs(twist) * 0.7);
             lMotorSpeed = lAxis;
         }
         // Straight
@@ -49,13 +50,8 @@ public class Drivetrain {
         rMotorSpeed *= speedFactor;
         lMotorSpeed *= speedFactor;
 
-        if (rMotorSpeed > 1) { rMotorSpeed = 1; }
-        if (lMotorSpeed > 1) { lMotorSpeed = 1; }
-        if (rMotorSpeed < -1) { rMotorSpeed = -1; }
-        if (lMotorSpeed < -1) { lMotorSpeed = -1; }
-
-        m_rightMotor.set(rMotorSpeed);
-        m_leftMotor.set(-lMotorSpeed);
+        m_rightMotor.set(MathUtil.clamp(rMotorSpeed, -1, 1));
+        m_leftMotor.set(MathUtil.clamp(-lMotorSpeed, -1, 1));
     }
 
     public void setSpeed(double rSpeed, double lSpeed) {
