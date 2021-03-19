@@ -1,17 +1,13 @@
 package drivetrain;
 
 import edu.wpi.first.wpilibj.PWMTalonSRX;
-import edu.wpi.first.wpilibj.XboxController;
 
 public class Drivetrain {
-    private PWMTalonSRX m_leftMotor;
-    private PWMTalonSRX m_rightMotor;
 
-    private final double axisRange = 0.1;
+    private final PWMTalonSRX m_leftMotor;
+    private final PWMTalonSRX m_rightMotor;
 
     private double speedFactor = 0.3;
-    private final double minSpeed = 0.3;
-    private final double maxSpeed = 1;
 
     public Drivetrain() {
         // Define Motors
@@ -25,22 +21,23 @@ public class Drivetrain {
         double rMotorSpeed;
 
         // Custom Input Dead-zones
+        double axisRange = 0.01;
         if (lAxis < axisRange && lAxis > -axisRange) { lAxis = 0; }
         if (twist < axisRange && twist > -axisRange) { twist = 0; }
 
         // Turning In Place
-        if (lAxis == 0) {
+        if (lAxis == 0 && twist != 0) {
             lMotorSpeed = -twist*0.75;
             rMotorSpeed = twist*0.75;
         }
         // Turning Left
         else if (twist < 0){
             rMotorSpeed = lAxis;
-            lMotorSpeed = lAxis * (Math.abs(twist) * 0.9);
+            lMotorSpeed = lAxis * (Math.abs(twist) * 0.7);
         }
         // Turning Right
         else if (twist > 0){
-            rMotorSpeed = lAxis * (Math.abs(twist) * 0.9);
+            rMotorSpeed = lAxis * (Math.abs(twist) * 0.7);
             lMotorSpeed = lAxis;
         }
         // Straight
@@ -52,11 +49,23 @@ public class Drivetrain {
         rMotorSpeed *= speedFactor;
         lMotorSpeed *= speedFactor;
 
-        m_rightMotor.set(rMotorSpeed/1.1);
+        if (rMotorSpeed > 1) { rMotorSpeed = 1; }
+        if (lMotorSpeed > 1) { lMotorSpeed = 1; }
+        if (rMotorSpeed < -1) { rMotorSpeed = -1; }
+        if (lMotorSpeed < -1) { lMotorSpeed = -1; }
+
+        m_rightMotor.set(rMotorSpeed);
         m_leftMotor.set(-lMotorSpeed);
     }
 
+    public void setSpeed(double rSpeed, double lSpeed) {
+        m_rightMotor.set(rSpeed);
+        m_leftMotor.set(lSpeed);
+    }
+
     public void changeSpeed(int dPad) {
+        double minSpeed = 0.3;
+        double maxSpeed = 1;
         if (dPad == 0 && speedFactor < maxSpeed) {
             speedFactor = Math.round((speedFactor + 0.1) * 10.0) / 10.0;
             System.out.println(speedFactor);

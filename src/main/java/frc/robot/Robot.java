@@ -5,6 +5,7 @@
 package frc.robot;
 
 import drivetrain.Drivetrain;
+import Aim.Target;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -23,6 +24,7 @@ public class Robot extends TimedRobot {
   private int pov = 0;
   private final Timer m_timer = new Timer();
   private Drivetrain drivetrain;
+  private Target limelightTargeting;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -33,6 +35,7 @@ public class Robot extends TimedRobot {
 
     // Setup Robot
     drivetrain = new Drivetrain();
+    limelightTargeting = new Target();
 
     // Set up the usb camera
     UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
@@ -65,15 +68,19 @@ public class Robot extends TimedRobot {
     if (currentPov != pov) {
       pov = currentPov;
       drivetrain.changeSpeed(m_XboxController.getPOV());
+
     }
 
   }
 
   /** This function is called once each time the robot enters test mode. */
   @Override
-  public void testInit() {}
+  public void testInit() {
+  }
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    if (m_XboxController.getBButton()) { limelightTargeting.aim(drivetrain); }
+  }
 }
