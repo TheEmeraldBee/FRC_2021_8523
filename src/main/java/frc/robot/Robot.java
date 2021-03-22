@@ -37,9 +37,7 @@ public class Robot extends TimedRobot {
     drivetrain = new Drivetrain();
 //    limelightTargeting = new Target();
 
-    // Set up the usb camera
-    UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-    camera.setResolution(160, 120);
+    CameraServer.getInstance().startAutomaticCapture().setResolution(160, 120);
   }
 
   /** This function is run once each time the robot enters autonomous mode. */

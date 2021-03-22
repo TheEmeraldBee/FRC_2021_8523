@@ -26,25 +26,41 @@ public class Drivetrain {
         if (lAxis < axisRange && lAxis > -axisRange) { lAxis = 0; }
         if (twist < axisRange && twist > -axisRange) { twist = 0; }
 
-        // Turning In Place
+        // Set Default Speed
+        rMotorSpeed = lAxis;
+        lMotorSpeed = lAxis;
+
         if (lAxis == 0 && twist != 0) {
-            lMotorSpeed = -twist*0.75;
-            rMotorSpeed = twist*0.75;
+            lMotorSpeed = -twist * 0.75;
+            rMotorSpeed = twist * 0.75;
         }
-        // Turning Left
-        else if (twist < 0){
-            rMotorSpeed = lAxis;
-            lMotorSpeed = lAxis + (Math.abs(twist) * 0.7);
+
+        // If Forward
+        if (lAxis > 0) {
+            // Turning Left
+            if (twist > 0) {
+                lMotorSpeed = lAxis;
+                rMotorSpeed = lAxis - (Math.abs(twist) * 0.7);
+            }
+            // Turning Right
+            else if (twist < 0) {
+                lMotorSpeed = lAxis - (Math.abs(twist) * 0.7);
+                rMotorSpeed = lAxis;
+            }
         }
-        // Turning Right
-        else if (twist > 0){
-            rMotorSpeed = lAxis + (Math.abs(twist) * 0.7);
-            lMotorSpeed = lAxis;
-        }
-        // Straight
-        else {
-            rMotorSpeed = lAxis;
-            lMotorSpeed = lAxis;
+
+        // If Backward
+        if (lAxis < 0) {
+            // Turning Left
+            if (twist > 0) {
+                lMotorSpeed = lAxis;
+                rMotorSpeed = lAxis + (Math.abs(twist) * 0.7);
+            }
+            // Turning Right
+            else if (twist < 0) {
+                lMotorSpeed = lAxis + (Math.abs(twist) * 0.7);
+                rMotorSpeed = lAxis;
+            }
         }
 
         rMotorSpeed *= speedFactor;

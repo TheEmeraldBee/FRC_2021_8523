@@ -1,9 +1,13 @@
 package Aim;
 
 import drivetrain.Drivetrain;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+
+import java.lang.reflect.Constructor;
 
 public class Target {
     NetworkTable table;
@@ -11,7 +15,7 @@ public class Target {
     NetworkTableEntry ty;
     NetworkTableEntry tv;
 
-    public void aim(Drivetrain drivetrain) {
+    public void aimTarget(Drivetrain drivetrain) {
         table = NetworkTableInstance.getDefault().getTable("limelight");
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
@@ -43,5 +47,10 @@ public class Target {
                 }
             }
         }
+    }
+
+    public void findBall() {
+        CameraServer.getInstance().startAutomaticCapture().setResolution(160, 120);
+        CvSink cvSink = CameraServer.getInstance().getVideo();
     }
 }
