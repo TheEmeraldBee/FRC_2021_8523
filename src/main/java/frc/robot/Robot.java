@@ -4,11 +4,13 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.PWMTalonSRX;
+import drivetrain.Drivetrain;
+import Aim.Target;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -17,17 +19,26 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * directory.
  */
 public class Robot extends TimedRobot {
-  private final DifferentialDrive m_robotDrive =
-      new DifferentialDrive(new PWMTalonSRX(0), new PWMTalonSRX(3));
+  // Prepare Controller, Timer, and Drive-Train
   private final XboxController m_XboxController = new XboxController(0);
+  private int pov = 0;
   private final Timer m_timer = new Timer();
+  private Drivetrain drivetrain;
+  private Target limelightTargeting;
 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
-  public void robotInit() {}
+  public void robotInit() {
+
+    // Setup Robot
+    drivetrain = new Drivetrain();
+//    limelightTargeting = new Target();
+
+    CameraServer.getInstance().startAutomaticCapture().setResolution(160, 120);
+  }
 
   /** This function is run once each time the robot enters autonomous mode. */
   @Override
@@ -39,12 +50,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    // Drive for 2 seconds
-    if (m_timer.get() < 2.0) {
-      m_robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
-    } else {
-      m_robotDrive.stopMotor(); // stop robot
-    }
   }
 
   /** This function is called once each time the robot enters teleoperated mode. */
@@ -54,18 +59,26 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic() {
-    double RAxis = m_XboxController.getRawAxis(5);
-    double LAxis = m_XboxController.getRawAxis(1);
-    if (LAxis < 0.008 && LAxis > -0.008) { LAxis = 0; }
-    if (RAxis < 0.008 && RAxis > -0.008) { RAxis = 0; }
-    m_robotDrive.tankDrive(-LAxis, -RAxis/1.05);
+
+    drivetrain.arcadeDrive(m_XboxController.getRawAxis(1),  m_XboxController.getRawAxis(2));
+
+    int currentPov = m_XboxController.getPOV();
+    if (currentPov != pov) {
+      pov = currentPov;
+      drivetrain.changeSpeed(m_XboxController.getPOV());
+
+    }
+
   }
 
   /** This function is called once each time the robot enters test mode. */
   @Override
-  public void testInit() {}
+  public void testInit() {
+  }
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+//    if (m_XboxController.getBButton()) { limelightTargeting.aim(drivetrain); }
+  }
 }
