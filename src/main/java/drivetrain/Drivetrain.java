@@ -1,19 +1,24 @@
 package drivetrain;
 
-import edu.wpi.first.wpilibj.PWMTalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpiutil.math.MathUtil;
 
 public class Drivetrain {
 
-    private final PWMTalonSRX m_leftMotor;
-    private final PWMTalonSRX m_rightMotor;
+    private final CANSparkMax m_leftMotor;
+    private final CANSparkMax m_rightMotor;
 
     private double speedFactor = 0.3;
 
     public Drivetrain() {
         // Define Motors
-        m_leftMotor = new PWMTalonSRX(0);
-        m_rightMotor = new PWMTalonSRX(3);
+        m_leftMotor = new CANSparkMax(2, MotorType.kBrushed);
+        m_rightMotor = new CANSparkMax(1, MotorType.kBrushed);
+        m_leftMotor.restoreFactoryDefaults();
+        m_rightMotor.restoreFactoryDefaults();
+        m_leftMotor.setClosedLoopRampRate(2);
+        m_rightMotor.setClosedLoopRampRate(2);
     }
 
     public void arcadeDrive(double lAxis, double twist) {
@@ -39,7 +44,6 @@ public class Drivetrain {
         if (lAxis > 0) {
             // Turning Left
             if (twist > 0) {
-                lMotorSpeed = lAxis;
                 rMotorSpeed = lAxis - (Math.abs(twist) * 0.7);
             }
             // Turning Right
