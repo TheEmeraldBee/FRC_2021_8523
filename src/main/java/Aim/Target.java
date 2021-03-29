@@ -38,17 +38,12 @@ public class Target {
             } else if (targetX > 5) {
                 drivetrain.setSpeed(-0.3, 0.3);
             } else {
-                if (distance > 60) {
+                if (distance < 60) {
                     drivetrain.setSpeed(-0.3, -0.3);
-                } else if (distance < 80) {
+                } else if (distance > 80) {
                     drivetrain.setSpeed(0.3, 0.3);
                 }
             }
         }
-    }
-
-    public void findBall() {
-        CameraServer.getInstance().startAutomaticCapture().setResolution(160, 120);
-        CvSink cvSink = CameraServer.getInstance().getVideo();
     }
 }

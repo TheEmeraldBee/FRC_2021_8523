@@ -6,23 +6,34 @@ import edu.wpi.first.wpiutil.math.MathUtil;
 
 public class Drivetrain {
 
-    private final CANSparkMax m_leftMotor;
-    private final CANSparkMax m_rightMotor;
+    // Define Motors
+    private final CANSparkMax leftMotor;
+    private final CANSparkMax rightMotor;
 
+    // Factor at which to multiply axis for speeds
     private double speedFactor = 0.3;
 
+    private boolean backwards = false;
+
+    private boolean lastSwapMove = false;
+
     public Drivetrain() {
-        // Define Motors
-        m_leftMotor = new CANSparkMax(2, MotorType.kBrushed);
-        m_rightMotor = new CANSparkMax(1, MotorType.kBrushed);
-        m_leftMotor.restoreFactoryDefaults();
-        m_rightMotor.restoreFactoryDefaults();
-        m_leftMotor.setClosedLoopRampRate(2);
-        m_rightMotor.setClosedLoopRampRate(2);
+        // Set Up Motors
+        leftMotor = new CANSparkMax(2, MotorType.kBrushed);
+        rightMotor = new CANSparkMax(1, MotorType.kBrushed);
+
+        // Reset Motor Controller Settings
+        leftMotor.restoreFactoryDefaults();
+        rightMotor.restoreFactoryDefaults();
+
+        // Change the Speed Of Acceleration
+        leftMotor.setOpenLoopRampRate(1);
+        rightMotor.setOpenLoopRampRate(1);
     }
 
     public void arcadeDrive(double lAxis, double twist) {
 
+        // Set Motor Speed
         double lMotorSpeed;
         double rMotorSpeed;
 
@@ -35,6 +46,7 @@ public class Drivetrain {
         rMotorSpeed = lAxis;
         lMotorSpeed = lAxis;
 
+        // Turning In Place
         if (lAxis == 0 && twist != 0) {
             lMotorSpeed = -twist * 0.75;
             rMotorSpeed = twist * 0.75;
@@ -67,16 +79,31 @@ public class Drivetrain {
             }
         }
 
+        // Speed Factors
         rMotorSpeed *= speedFactor;
         lMotorSpeed *= speedFactor;
 
-        m_rightMotor.set(MathUtil.clamp(-rMotorSpeed, -1, 1));
-        m_leftMotor.set(MathUtil.clamp(lMotorSpeed, -1, 1));
+        // Move Motors
+        if (!backwards) {
+            rightMotor.set(MathUtil.clamp(-rMotorSpeed, -1, 1));
+            leftMotor.set(MathUtil.clamp(lMotorSpeed, -1, 1));
+        }
+        else {
+            leftMotor.set(MathUtil.clamp(-rMotorSpeed, -1, 1));
+            rightMotor.set(MathUtil.clamp(lMotorSpeed, -1, 1));
+        }
     }
 
     public void setSpeed(double rSpeed, double lSpeed) {
-        m_rightMotor.set(rSpeed);
-        m_leftMotor.set(lSpeed);
+        rightMotor.set(rSpeed);
+        leftMotor.set(lSpeed);
+    }
+
+    public void swapDirection(boolean button) {
+        if (button && !lastSwapMove) {
+            backwards = !backwards;
+        }
+        lastSwapMove = button;
     }
 
     public void changeSpeed(int dPad) {

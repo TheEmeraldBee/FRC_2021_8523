@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
     drivetrain = new Drivetrain();
     limelightTargeting = new Target();
     launcher = new Launcher(0.05);
-    intakeHopper = new IntakeHopper(1, 0.05);
+    intakeHopper = new IntakeHopper(0.7, 0.05);
 
     CameraServer.getInstance().startAutomaticCapture().setResolution(160, 120);
   }
@@ -66,6 +66,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    drivetrain.swapDirection(XboxController.getRawButton(5));
+
     drivetrain.arcadeDrive(XboxController.getRawAxis(1),  XboxController.getRawAxis(2));
 
     launcher.setLauncherSpeed(XboxController.getAButton());
@@ -88,6 +90,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-//    if (m_XboxController.getBButton()) { limelightTargeting.aim(drivetrain); }
+    if (XboxController.getBButton()) { limelightTargeting.aimTarget(drivetrain); }
   }
 }
