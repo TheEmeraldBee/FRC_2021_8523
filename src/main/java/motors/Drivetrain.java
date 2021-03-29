@@ -1,4 +1,4 @@
-package drivetrain;
+package motors;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -70,8 +70,8 @@ public class Drivetrain {
         rMotorSpeed *= speedFactor;
         lMotorSpeed *= speedFactor;
 
-        m_rightMotor.set(MathUtil.clamp(rMotorSpeed, -1, 1));
-        m_leftMotor.set(MathUtil.clamp(-lMotorSpeed, -1, 1));
+        m_rightMotor.set(MathUtil.clamp(-rMotorSpeed, -1, 1));
+        m_leftMotor.set(MathUtil.clamp(lMotorSpeed, -1, 1));
     }
 
     public void setSpeed(double rSpeed, double lSpeed) {

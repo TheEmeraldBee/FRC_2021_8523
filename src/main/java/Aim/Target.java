@@ -1,13 +1,11 @@
 package Aim;
 
-import drivetrain.Drivetrain;
+import motors.Drivetrain;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
-import java.lang.reflect.Constructor;
 
 public class Target {
     NetworkTable table;

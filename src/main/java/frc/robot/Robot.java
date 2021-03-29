@@ -4,13 +4,15 @@
 
 package frc.robot;
 
-import drivetrain.Drivetrain;
+import edu.wpi.first.wpilibj.GenericHID;
+import motors.Drivetrain;
 import Aim.Target;
-import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import motors.IntakeHopper;
+import motors.Launcher;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,11 +22,13 @@ import edu.wpi.first.wpilibj.XboxController;
  */
 public class Robot extends TimedRobot {
   // Prepare Controller, Timer, and Drive-Train
-  private final XboxController m_XboxController = new XboxController(0);
+  private final XboxController XboxController = new XboxController(0);
   private int pov = 0;
-  private final Timer m_timer = new Timer();
+  private final Timer timer = new Timer();
   private Drivetrain drivetrain;
   private Target limelightTargeting;
+  private Launcher launcher;
+  private IntakeHopper intakeHopper;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -35,7 +39,9 @@ public class Robot extends TimedRobot {
 
     // Setup Robot
     drivetrain = new Drivetrain();
-//    limelightTargeting = new Target();
+    limelightTargeting = new Target();
+    launcher = new Launcher(0.05);
+    intakeHopper = new IntakeHopper(1, 0.05);
 
     CameraServer.getInstance().startAutomaticCapture().setResolution(160, 120);
   }
@@ -43,8 +49,8 @@ public class Robot extends TimedRobot {
   /** This function is run once each time the robot enters autonomous mode. */
   @Override
   public void autonomousInit() {
-    m_timer.reset();
-    m_timer.start();
+    timer.reset();
+    timer.start();
   }
 
   /** This function is called periodically during autonomous. */
@@ -60,12 +66,15 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    drivetrain.arcadeDrive(m_XboxController.getRawAxis(1),  m_XboxController.getRawAxis(2));
+    drivetrain.arcadeDrive(XboxController.getRawAxis(1),  XboxController.getRawAxis(2));
 
-    int currentPov = m_XboxController.getPOV();
+    launcher.setLauncherSpeed(XboxController.getAButton());
+    intakeHopper.setSpeed(XboxController.getBButton(), XboxController.getYButton(), XboxController.getXButton());
+
+    int currentPov = XboxController.getPOV();
     if (currentPov != pov) {
       pov = currentPov;
-      drivetrain.changeSpeed(m_XboxController.getPOV());
+      drivetrain.changeSpeed(XboxController.getPOV());
 
     }
 
