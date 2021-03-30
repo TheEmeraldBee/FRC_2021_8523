@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
     drivetrain = new Drivetrain();
     limelightTargeting = new Target();
     launcher = new Launcher(0.05);
-    intakeHopper = new IntakeHopper(1, 0.05);
+    intakeHopper = new IntakeHopper(1, 1);
 
     CameraServer.getInstance().startAutomaticCapture().setResolution(160, 120);
   }
