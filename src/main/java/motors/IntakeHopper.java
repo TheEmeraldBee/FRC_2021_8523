@@ -17,15 +17,21 @@ public class IntakeHopper {
         motor = new Spark(2);
     }
 
-    public void setSpeed(boolean forwardButton, boolean backButton, boolean stopButton) {
+    public void setSpeed(boolean backButton, boolean forwardButton, boolean stopButton) {
         if (stopButton) {
             speed = 0;
         }
-        else if (forwardButton && speed < maxSpeed) {
+        else if (backButton && speed < maxSpeed/1.5) {
             speed += speedIncrement;
         }
-        else if (backButton && speed > -maxSpeed) {
+        else if (forwardButton && speed > -maxSpeed) {
             speed -= speedIncrement;
+        }
+        else if (speed > 0) {
+            speed -= speedIncrement;
+        }
+        else if (speed < 0) {
+            speed += speedIncrement;
         }
 
         speed = MathUtil.clamp(speed, -maxSpeed, maxSpeed);

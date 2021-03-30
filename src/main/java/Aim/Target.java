@@ -33,17 +33,17 @@ public class Target {
 
             System.out.println(distance);
 
-            if (targetX < -5) {
-                drivetrain.setSpeed(0.3, -0.3);
-            } else if (targetX > 5) {
-                drivetrain.setSpeed(-0.3, 0.3);
-            } else {
-                if (distance < 60) {
-                    drivetrain.setSpeed(-0.3, -0.3);
-                } else if (distance > 80) {
-                    drivetrain.setSpeed(0.3, 0.3);
-                }
-            }
+//            if (targetX < -5) {
+//                drivetrain.setSpeed(0.3, -0.3);
+//            } else if (targetX > 5) {
+//                drivetrain.setSpeed(-0.3, 0.3);
+//            } else {
+//                if (distance < 60) {
+//                    drivetrain.setSpeed(-0.3, -0.3);
+//                } else if (distance > 80) {
+//                    drivetrain.setSpeed(0.3, 0.3);
+//                }
+//            }
         }
     }
 }
